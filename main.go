@@ -48,6 +48,17 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 }
 
+func deleteTodo(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	for index, item := range todos {
+			if item.ID == params["id"] {
+					todos = append(todos[:index], todos[index+1:]...)
+					break
+			}
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/todos", getTodos).Methods("GET")
