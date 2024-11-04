@@ -31,6 +31,23 @@ func getTodoByID(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 }
 
+func updateTodo(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	for index, item := range todos {
+			if item.ID == params["id"] {
+					todos = append(todos[:index], todos[index+1:]...)
+					var todo Todo
+					_ = json.NewDecoder(r.Body).Decode(&todo)
+					todo.ID = params["id"]
+					todos = append(todos, todo)
+					w.Header().Set("Content-Type", "application/json")
+					json.NewEncoder(w).Encode(todo)
+					return
+			}
+	}
+	w.WriteHeader(http.StatusNotFound)
+}
+
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/todos", getTodos).Methods("GET")
