@@ -63,5 +63,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/todos", getTodos).Methods("GET")
 	router.HandleFunc("/todos", createTodo).Methods("POST")
+	router.HandleFunc("/todos/{id}", getTodoByID).Methods("GET")
+	router.HandleFunc("/todos/{id}", updateTodo).Methods("PUT")
+	router.HandleFunc("/todos/{id}", deleteTodo).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
