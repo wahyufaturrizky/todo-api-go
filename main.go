@@ -1,27 +1,36 @@
 package main
 
 import (
-    "net/http"
-    "github.com/gorilla/mux"
-		"encoding/json"
+	"encoding/json"
+	"log"
+	"net/http"
+	"github.com/gorilla/mux"
 )
+
+type Todo struct {
+    ID        string `json:"id"`
+    Title     string `json:"title"`
+    Completed bool   `json:"completed"`
+}
+
+var Todos []Todo
 
 func getTodos(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todos)
+	json.NewEncoder(w).Encode(Todos)
 }
 
 func createTodo(w http.ResponseWriter, r *http.Request) {
 	var todo Todo
 	_ = json.NewDecoder(r.Body).Decode(&todo)
-	todos = append(todos, todo)
+	Todos = append(Todos, todo)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(todo)
 }
 
 func getTodoByID(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	for _, item := range todos {
+	for _, item := range Todos {
 			if item.ID == params["id"] {
 					w.Header().Set("Content-Type", "application/json")
 					json.NewEncoder(w).Encode(item)
@@ -33,13 +42,13 @@ func getTodoByID(w http.ResponseWriter, r *http.Request) {
 
 func updateTodo(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	for index, item := range todos {
+	for index, item := range Todos {
 			if item.ID == params["id"] {
-					todos = append(todos[:index], todos[index+1:]...)
+					Todos = append(Todos[:index], Todos[index+1:]...)
 					var todo Todo
 					_ = json.NewDecoder(r.Body).Decode(&todo)
 					todo.ID = params["id"]
-					todos = append(todos, todo)
+					Todos = append(Todos, todo)
 					w.Header().Set("Content-Type", "application/json")
 					json.NewEncoder(w).Encode(todo)
 					return
@@ -50,9 +59,9 @@ func updateTodo(w http.ResponseWriter, r *http.Request) {
 
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	for index, item := range todos {
+	for index, item := range Todos {
 			if item.ID == params["id"] {
-					todos = append(todos[:index], todos[index+1:]...)
+					Todos = append(Todos[:index], Todos[index+1:]...)
 					break
 			}
 	}
